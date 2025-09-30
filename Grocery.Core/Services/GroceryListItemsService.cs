@@ -79,9 +79,10 @@ namespace Grocery.Core.Services
                         product.Name,
                         product.Stock,
                         productInfo.TotalSold,
-                        rank++ // Rangnummer verhogen
+                        rank // Rangnummer
                     ));
                 }
+                rank++; // Rangnummer verhogen, ongeacht of product bestaat
             }
             // Retourneer de lijst met best verkochte producten
             return bestSellers;
