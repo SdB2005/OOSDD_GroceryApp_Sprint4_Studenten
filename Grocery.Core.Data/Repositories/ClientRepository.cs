@@ -1,5 +1,4 @@
-﻿
-using Grocery.Core.Interfaces.Repositories;
+﻿using Grocery.Core.Interfaces.Repositories;
 using Grocery.Core.Models;
 
 namespace Grocery.Core.Data.Repositories
@@ -15,6 +14,11 @@ namespace Grocery.Core.Data.Repositories
                 new Client(2, "H.H. Hermans", "user2@mail.com", "dOk+X+wt+MA9uIniRGKDFg==.QLvy72hdG8nWj1FyL75KoKeu4DUgu5B/HAHqTD2UFLU="),
                 new Client(3, "A.J. Kwak", "user3@mail.com", "sxnIcZdYt8wC8MYWcQVQjQ==.FKd5Z/jwxPv3a63lX+uvQ0+P7EuNYZybvkmdhbnkIHA=")
             ];
+
+            // admin aan user3 gevn
+            var adminClient = clientList.FirstOrDefault(c => c.EmailAddress == "user3@mail.com");
+            if (adminClient != null)
+                adminClient.Role = Role.Admin;
         }
 
         public Client? Get(string email)

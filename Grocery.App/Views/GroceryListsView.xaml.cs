@@ -1,13 +1,15 @@
 using Grocery.App.ViewModels;
+using Grocery.Core.Interfaces.Services;
+using Grocery.Core.Models;
 
 namespace Grocery.App.Views;
 
 public partial class GroceryListsView : ContentPage
 {
-    public GroceryListsView(GroceryListViewModel viewModel)
+    public GroceryListsView(IGroceryListService groceryListService, GlobalViewModel global)
     {
         InitializeComponent();
-        BindingContext = viewModel;
+        BindingContext = new GroceryListViewModel(groceryListService, global.Client);
     }
 
     protected override void OnAppearing()
