@@ -51,7 +51,45 @@ namespace Grocery.Core.Services
 
         public List<BestSellingProducts> GetBestSellingProducts(int topX = 5)
         {
-            throw new NotImplementedException();
+            // Haal alle boodschappenlijst-items op uit de repository
+            var items = _groceriesRepository.GetAll();
+
+            // Groepeer items op ProductId en bereken het totaal verkochte aantal per product
+            var topProducts = items
+                .GroupBy(i => i.ProductId)
+                .Select(group => new
+                {
+                    ProductId = group.Key,
+                    TotalSold = group.Sum(item => item.Amount)
+                })
+                .OrderByDescending(x => x.TotalSold) // Sorteer aflopend op aantal verkopen
+                .Take(topX); // Neem de top X producten
+
+            var bestSellers = new List<BestSellingProducts>();
+            int rank = 1;
+
+            // Verzamel alle ProductIds uit de top producten
+            var productIds = topProducts.Select(p => p.ProductId).ToList();
+            var products = _productRepository.GetByIds(productIds);
+            var productsDict = products.ToDictionary(p => p.Id);
+
+            // Voor elk product in de top, haal het product op uit de batch en voeg toe aan de lijst met bestsellers
+            foreach (var productInfo in topProducts)
+            {
+                if (productsDict.TryGetValue(productInfo.ProductId, out var product) && product != null)
+                {
+                    bestSellers.Add(new BestSellingProducts(
+                        productInfo.ProductId,
+                        product.Name,
+                        product.Stock,
+                        productInfo.TotalSold,
+                        rank // Rangnummer
+                    ));
+                }
+                rank++; // Rangnummer verhogen, ongeacht of product bestaat
+            }
+            // Retourneer de lijst met best verkochte producten
+            return bestSellers;
         }
 
         private void FillService(List<GroceryListItem> groceryListItems)
