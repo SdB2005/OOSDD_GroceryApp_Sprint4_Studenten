@@ -68,25 +68,20 @@ namespace Grocery.Core.Services
             var bestSellers = new List<BestSellingProducts>();
             int rank = 1;
 
-            // Verzamel alle ProductIds uit de top producten
-            var productIds = topProducts.Select(p => p.ProductId).ToList();
-            var products = _productRepository.GetByIds(productIds);
-            var productsDict = products.ToDictionary(p => p.Id);
-
-            // Voor elk product in de top, haal het product op uit de batch en voeg toe aan de lijst met bestsellers
+            // Voor elk product in de top, haal het product op en voeg toe aan de lijst met bestsellers
             foreach (var productInfo in topProducts)
             {
-                if (productsDict.TryGetValue(productInfo.ProductId, out var product) && product != null)
+                var product = _productRepository.Get(productInfo.ProductId);
+                if (product != null)
                 {
                     bestSellers.Add(new BestSellingProducts(
                         productInfo.ProductId,
                         product.Name,
                         product.Stock,
                         productInfo.TotalSold,
-                        rank // Rangnummer
+                        rank++ // Rangnummer verhogen
                     ));
                 }
-                rank++; // Rangnummer verhogen, ongeacht of product bestaat
             }
             // Retourneer de lijst met best verkochte producten
             return bestSellers;
